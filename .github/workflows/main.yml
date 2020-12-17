@@ -18,11 +18,10 @@ jobs:
 
     steps:
       - name: Checkout
-        run: BRANCH=${GITHUB_REF##*/}
       - uses: actions/checkout@v2
         with:
           fetch-depth: 1
-          ref: $BRANCH
+          ref: release/5.0
           token: ${{ secrets.checkoutsec }}
         
       - name: Get Latest Docker for FreeBSD
