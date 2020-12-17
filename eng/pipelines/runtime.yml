@@ -6,8 +6,6 @@ trigger:
   batch: true
   branches:
     include:
-    - master
-    - dev/infrastructure
     - release/*.*
   paths:
     include:
@@ -28,8 +26,6 @@ trigger:
 pr:
   branches:
     include:
-    - master
-    - dev/infrastructure
     - release/*.*
   paths:
     include:
@@ -139,16 +135,7 @@ jobs:
     jobTemplate: /eng/pipelines/coreclr/templates/build-job.yml
     buildConfig: checked
     platforms:
-    - Linux_x64
-    - Linux_arm
-    - Linux_arm64
-    - Linux_musl_arm
-    - Linux_musl_arm64
-    - Linux_musl_x64
-    - Windows_NT_x86
-    - Windows_NT_x64
-    - Windows_NT_arm
-    - Windows_NT_arm64
+    - FreeBSD_x64
     jobParameters:
       testGroup: innerloop
       condition: >-
@@ -203,17 +190,6 @@ jobs:
     jobTemplate: /eng/pipelines/coreclr/templates/build-job.yml
     buildConfig: release
     platforms:
-    - OSX_x64
-    - Linux_x64
-    - Linux_arm
-    - Linux_arm64
-    - Linux_musl_x64
-    - Linux_musl_arm
-    - Linux_musl_arm64
-    - Windows_NT_x64
-    - Windows_NT_x86
-    - Windows_NT_arm
-    - Windows_NT_arm64
     - FreeBSD_x64
     jobParameters:
       testGroup: innerloop
