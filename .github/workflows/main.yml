@@ -25,11 +25,11 @@ jobs:
           echo running on tag ${BRANCHTAG}
           
       - name: Checkout 2
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
         with:
-          fetch-depth: 1
-          ref: ${BRANCHTAG}
-          token: ${{ secrets.checkoutsec }}
+         fetch-depth: 1
+         ref: ${BRANCHTAG}
+         token: ${{ secrets.checkoutsec }}
         
       - name: Get Latest Docker for FreeBSD
         run: |
