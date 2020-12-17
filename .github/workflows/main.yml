@@ -18,17 +18,13 @@ jobs:
 
     steps:
       - name: Checkout Correct Branch        
-        run: |
-          BRANCHTAG=${GITHUB_REF#refs/heads/}
-          echo running on branch ${BRANCHTAG}
-          BRANCHTAG=${BRANCHTAG#refs/tags/}
-          echo running on tag ${BRANCHTAG}
-          
+        run: echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
+        id: extract_branch
       - name: Checkout 2
         uses: actions/checkout@v2
         with:
          fetch-depth: 1
-         ref: ${BRANCHTAG}
+         ref: ${{ steps.extract_branch.outputs.branch }}
          token: ${{ secrets.checkoutsec }}
         
       - name: Get Latest Docker for FreeBSD
