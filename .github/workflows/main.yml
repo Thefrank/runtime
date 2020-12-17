@@ -17,11 +17,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout        
+        run: |
+          BRANCHTAG=${GITHUB_REF#refs/heads/}
+          BRANCHTAG=${BRANCHTAG#refs/tags/}
       - uses: actions/checkout@v2
         with:
           fetch-depth: 1
-          ref: release/5.0
+          ref: ${BRANCHTAG}
           token: ${{ secrets.checkoutsec }}
         
       - name: Get Latest Docker for FreeBSD
