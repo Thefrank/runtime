@@ -14,10 +14,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
       - uses: actions/checkout@v2
-        fetch-depth: 1
-        ref: ${{GITHUB_REF#refs/heads/}}
-        token: ${{ secrets.checkoutsec }}
+        with:
+          fetch-depth: 1
+          ref: ${{GITHUB_REF#refs/heads/}}
+          token: ${{ secrets.checkoutsec }}
         
       - name: Get Latest Docker for FreeBSD
         run: |
