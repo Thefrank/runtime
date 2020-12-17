@@ -3,7 +3,10 @@ name: CI
 on:
   push:
     branches: [ release/5.0 ]
+    tags: '*'
   workflow_dispatch:
+    branches: [ release/5.0 ]
+    tags: '*'
 
 jobs:
   build-runtime-and-tests:
