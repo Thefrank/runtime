@@ -17,10 +17,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout        
+      - name: Checkout Correct Branch        
         run: |
           BRANCHTAG=${GITHUB_REF#refs/heads/}
+          echo running on branch ${BRANCHTAG}
           BRANCHTAG=${BRANCHTAG#refs/tags/}
+          echo running on tag ${BRANCHTAG}
+          
+      - name: Checkout 2
       - uses: actions/checkout@v2
         with:
           fetch-depth: 1
