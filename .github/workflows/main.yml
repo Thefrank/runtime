@@ -1,44 +1,36 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ release/5.0 ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build-runtime-and-tests:
     env:
       ROOTFS_ENV: ROOTFS_DIR=/crossrootfs/x64
       DOTNET_DOCKER_SERVER: mcr.microsoft.com/dotnet-buildtools/prereqs
       DOTNET_DOCKER_FALLBACK_TAG: ubuntu-18.04-cross-freebsd-20201102145728-f13d79e
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Checkout Single Branch
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+        fetchdepth: 1
         ref: ${{GITHUB_REF#refs/heads/}}
         token: ${{ secrets.checkoutsec }}
+        
       - name: Get Latest Docker for FreeBSD
         run: |
           curl https://raw.githubusercontent.com/dotnet/versions/master/build-info/docker/image-info.dotnet-dotnet-buildtools-prereqs-docker-master.json -o /tmp/images.json
           LATEST_TAG=$(node -p "require('/tmp/images.json').repos[0].images.find(x => x.platforms[0].dockerfile.includes('freebsd')).platforms[0].simpleTags[0]" 2>/dev/null)
           echo "DOTNET_DOCKER_TAG=$DOTNET_DOCKER_SERVER:${LATEST_TAG:-DOTNET_DOCKER_FALLBACK_TAG}" >> $GITHUB_ENV
-      # Runs a single command using the runners shell
+
       - name: Build Runtime Linux->FreeBSD
         run: docker run -e $ROOTFS_ENV -v $(pwd):/runtime $DOTNET_DOCKER_TAG /runtime/build.sh -c Release -cross -os freebsd
+        
       - name: Build Runtime Tests but do not run them Linux->FreeBSD
         run: docker run -e $ROOTFS_ENV -v $(pwd):/runtime $DOTNET_DOCKER_TAG /runtime/build.sh -c Release -cross -os freebsd -subset Libs.Tests /p:ArchiveTests=true
+        
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
