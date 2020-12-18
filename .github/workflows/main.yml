@@ -42,16 +42,6 @@ jobs:
           name: artifacts
           path: artifacts/packages/Release/Shipping/*
           
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.extract_branch.outputs.branch }}
-          release_name: Release ${{ steps.extract_branch.outputs.branch }}
-          draft: false
-          prerelease: false
 #WTB Official Github Action for uploading more than one file. PST.
       - name: Upload Release Assets
         run: |
