@@ -36,7 +36,7 @@ jobs:
       - name: Build Runtime Linux->FreeBSD
         run: docker run -e $ROOTFS_ENV -v $(pwd):/runtime $DOTNET_DOCKER_TAG /runtime/build.sh -c Release -cross -os freebsd
         
-      - name: Upload Artifacts
+      - name: Upload Artifacts #
         uses: actions/upload-artifact@v2
         with:
           name: artifacts
@@ -52,11 +52,10 @@ jobs:
           release_name: Release ${{ steps.extract_branch.outputs.branch }}
           draft: false
           prerelease: false
-      - name: Upload Release Asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
+#WTB Official Github Action for uploading more than one file
+      - name: Upload Release Assets
+        uses: alexellis/upload-assets@0.2.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: artifacts/packages/Release/Shipping/
+          asset_paths: '["./artifacts/packages/Release/Shipping*"]'
