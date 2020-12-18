@@ -52,10 +52,13 @@ jobs:
           release_name: Release ${{ steps.extract_branch.outputs.branch }}
           draft: false
           prerelease: false
-#WTB Official Github Action for uploading more than one file
+#WTB Official Github Action for uploading more than one file. PST.
       - name: Upload Release Assets
-        uses: alexellis/upload-assets@0.2.3
+        run: |
+          artifacts=
+          for artifact in artifacts/packages/Release/Shipping/*.*; do
+            artifacts="$artifacts -a $artifact"
+          done
+          hub release create $artifacts -m ${{ steps.extract_branch.outputs.branch }} ${{ steps.extract_branch.outputs.branch }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          asset_paths: '["artifacts/packages/Release/Shipping"]'
