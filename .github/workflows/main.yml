@@ -36,9 +36,6 @@ jobs:
       - name: Build Runtime Linux->FreeBSD
         run: docker run -e $ROOTFS_ENV -v $(pwd):/runtime $DOTNET_DOCKER_TAG /runtime/build.sh -c Release -cross -os freebsd
         
-      - name: Build Runtime Tests but do not run them Linux->FreeBSD
-        run: docker run -e $ROOTFS_ENV -v $(pwd):/runtime $DOTNET_DOCKER_TAG /runtime/build.sh -c Release -cross -os freebsd -subset Libs.Tests /p:ArchiveTests=true
-        
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
