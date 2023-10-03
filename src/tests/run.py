@@ -646,14 +646,14 @@ def setup_coredump_generation(host_os):
         host_os (String)        : os
 
     Notes:
-        This is only support for OSX and Linux, it does nothing on Windows.
+        This is only support for OSX, Linux, and FreeBSD, it does nothing on Windows.
         This will print a message if setting the rlimit fails but will otherwise
         continue execution, as some systems will already be configured correctly
         and it is not necessarily a failure to not collect coredumps.
     """
     global coredump_pattern
 
-    if host_os == "osx":
+    if host_os == "osx" or host_os == "freebsd":
         coredump_pattern = subprocess.check_output("sysctl -n kern.corefile", shell=True).rstrip()
     elif host_os == "linux":
         with open("/proc/sys/kernel/core_pattern", "r") as f:
@@ -714,8 +714,8 @@ def print_info_from_coredump_file(host_os, arch, coredump_name, executable_name)
         executable_name (String) : name of the executable that generated the coredump
 
     Notes:
-        This is only support for OSX and Linux, it does nothing on Windows.
-        This defaults to lldb on OSX and gdb on Linux.
+        This is only support for OSX, Linux, and FreeBSD it does nothing on Windows.
+        This defaults to lldb on OSX and FreeBSD and gdb on Linux.
         For both lldb and db, it backtraces all threads. For gdb, it also prints local
         information for every frame. This option is not available as a built-in for lldb.
     """
@@ -729,7 +729,7 @@ def print_info_from_coredump_file(host_os, arch, coredump_name, executable_name)
 
     command = ""
 
-    if host_os == "osx":
+    if host_os == "osx" or host_os == "freebsd":
         command = "lldb -c %s -b -o 'bt all' -o 'disassemble -b -p'" % coredump_name
     elif host_os == "linux":
         command = "gdb --batch -ex \"thread apply all bt full\" -ex \"disassemble /r $pc\" -ex \"quit\" %s %s" % (executable_name, coredump_name)
@@ -811,12 +811,16 @@ def inspect_and_delete_coredump_files(host_os, arch, test_location):
     # determine which one it is.
     # On OS X/macOS, we checked the kern.corefile value before enabling core dump
     # generation, so we know it always includes the PID.
+    # On FreeBSD, kern.corefile uses %N instead of %P.
     coredump_name_uses_pid=False
+    coredump_name_uses_procname=False
 
     print("Looking for coredumps...")
 
     if "%P" in coredump_pattern:
         coredump_name_uses_pid=True
+    elif "%N" in coredump_pattern:
+        coredump_name_uses_procname=True
     elif host_os == "linux" and os.path.isfile("/proc/sys/kernel/core_uses_pid"):
         with open("/proc/sys/kernel/core_uses_pid", "r") as f:
             if f.read().rstrip() == "1":
@@ -829,6 +833,9 @@ def inspect_and_delete_coredump_files(host_os, arch, test_location):
     if coredump_name_uses_pid:
         filter_pattern = "core.*"
         regex_pattern = "core.[0-9]+"
+    elif coredump_name_uses_procname:
+        filter_pattern = "*.core"
+        regex_pattern = "^[a-zA-Z0-9_]+.core"
     else:
         filter_pattern = "core"
         regex_pattern = "core"

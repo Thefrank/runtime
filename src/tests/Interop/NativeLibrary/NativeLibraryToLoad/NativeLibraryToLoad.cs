@@ -27,6 +27,9 @@ public class NativeLibraryToLoad
         if (OperatingSystem.IsMacOS())
             return $"lib{name}.dylib";
 
+        if (OperatingSystem.IsFreeBSD())
+            return $"lib{name}.so";
+
         throw new PlatformNotSupportedException();
     }
 

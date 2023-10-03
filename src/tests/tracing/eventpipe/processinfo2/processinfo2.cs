@@ -196,6 +196,10 @@ namespace Tracing.Tests.ProcessInfoValidation
             {
                 expectedOSValue = "tvOS";
             }
+            else if (OperatingSystem.IsFreeBSD())
+            {
+                expectedOSValue = "FreeBSD";
+            }
             else
             {
                 expectedOSValue = "Unknown";
